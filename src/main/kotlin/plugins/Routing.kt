@@ -1,7 +1,10 @@
 package com.techbros.plugins
 
+import com.techbros.repositories.LocationRepository
 import com.techbros.repositories.UserRepository
+import com.techbros.routes.api.locationRoutes
 import com.techbros.routes.api.userRoutes
+import com.techbros.services.LocationService
 import com.techbros.services.UserService
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -11,6 +14,9 @@ fun Application.configureRouting() {
     // Initialize dependencies
     val userRepository = UserRepository()
     val userService = UserService(userRepository)
+
+    val locationRepository = LocationRepository()
+    val locationService = LocationService(locationRepository)
 
     // API routes
 
@@ -25,5 +31,6 @@ fun Application.configureRouting() {
 
         // API routes
         userRoutes(userService)
+        locationRoutes(locationService)
     }
 }

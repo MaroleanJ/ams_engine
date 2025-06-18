@@ -1,6 +1,7 @@
 package com.techbros.plugins
 
 import com.techbros.config.DatabaseConfig
+import com.techbros.database.tables.Locations
 import com.techbros.database.tables.Users
 import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -12,7 +13,8 @@ fun Application.configureDatabases() {
     // Create tables
     transaction(database) {
         SchemaUtils.create(
-            Users
+            Users,
+            Locations
         )
     }
 }

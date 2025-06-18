@@ -9,7 +9,8 @@ data class LocationDto(
     val description: String? = null,
     val address: String? = null,
     val parentLocationId: Int? = null,
-    val createdAt: String
+    val parentLocationName: String? = null, // For easier display
+    val createdAt: String? = null // Format: ISO 8601
 )
 
 @Serializable
@@ -29,12 +30,12 @@ data class UpdateLocationRequest(
 )
 
 @Serializable
-data class LocationWithChildrenDto(
-    val id: Int? = null,
+data class LocationHierarchyDto(
+    val id: Int,
     val name: String,
     val description: String? = null,
     val address: String? = null,
     val parentLocationId: Int? = null,
-    val createdAt: String,
-    val children: List<LocationDto> = emptyList()
+    val children: List<LocationHierarchyDto> = emptyList(),
+    val createdAt: String
 )

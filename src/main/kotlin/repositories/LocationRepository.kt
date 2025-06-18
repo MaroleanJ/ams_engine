@@ -3,6 +3,7 @@ package com.techbros.repositories
 import com.techbros.database.tables.Locations
 import com.techbros.models.dto.CreateLocationRequest
 import com.techbros.models.dto.LocationDto
+import com.techbros.models.dto.LocationHierarchyDto
 import com.techbros.models.dto.UpdateLocationRequest
 import com.techbros.utils.dbQuery
 import org.jetbrains.exposed.sql.*
@@ -20,30 +21,38 @@ class LocationRepository {
     }
 
     suspend fun findById(id: Int): LocationDto? = dbQuery {
-        Locations.selectAll()
+        val parentAlias = Locations.alias("parent")
+
+        Locations.leftJoin(parentAlias, { Locations.parentLocationId }, { parentAlias[Locations.id] })
+            .selectAll()
             .where { Locations.id eq id }
-            .map { mapRowToDto(it) }
+            .map { mapRowToDto(it, parentAlias) }
             .singleOrNull()
     }
 
     suspend fun findAll(): List<LocationDto> = dbQuery {
-        Locations.selectAll()
-            .orderBy(Locations.createdAt to SortOrder.DESC)
-            .map { mapRowToDto(it) }
+        val parentAlias = Locations.alias("parent")
+
+        Locations.leftJoin(parentAlias, { Locations.parentLocationId }, { parentAlias[Locations.id] })
+            .selectAll()
+            .orderBy(Locations.name to SortOrder.ASC)
+            .map { mapRowToDto(it, parentAlias) }
     }
 
     suspend fun findByParentId(parentId: Int?): List<LocationDto> = dbQuery {
-        if (parentId == null) {
-            Locations.selectAll()
-                .where { Locations.parentLocationId.isNull() }
-                .orderBy(Locations.name to SortOrder.ASC)
-                .map { mapRowToDto(it) }
-        } else {
-            Locations.selectAll()
-                .where { Locations.parentLocationId eq parentId }
-                .orderBy(Locations.name to SortOrder.ASC)
-                .map { mapRowToDto(it) }
-        }
+        val parentAlias = Locations.alias("parent")
+
+        Locations.leftJoin(parentAlias, { Locations.parentLocationId }, { parentAlias[Locations.id] })
+            .selectAll()
+            .where {
+                if (parentId == null) {
+                    Locations.parentLocationId.isNull()
+                } else {
+                    Locations.parentLocationId eq parentId
+                }
+            }
+            .orderBy(Locations.name to SortOrder.ASC)
+            .map { mapRowToDto(it, parentAlias) }
     }
 
     suspend fun findRootLocations(): List<LocationDto> = dbQuery {
@@ -63,48 +72,50 @@ class LocationRepository {
     }
 
     suspend fun delete(id: Int): Boolean = dbQuery {
-        Locations.deleteWhere { Locations.id eq id } > 0
-    }
-
-    suspend fun findByName(name: String): List<LocationDto> = dbQuery {
-        Locations.selectAll()
-            .where { Locations.name.lowerCase() like "%${name.lowercase()}%" }
-            .orderBy(Locations.name to SortOrder.ASC)
-            .map { mapRowToDto(it) }
-    }
-
-    suspend fun nameExists(name: String, excludeId: Int? = null): Boolean = dbQuery {
-        val query = Locations.selectAll()
-            .where { Locations.name.lowerCase() eq name.lowercase() }
-
-        if (excludeId != null) {
-            query.andWhere { Locations.id neq excludeId }
-        } else {
-            query
-        }.count() > 0
-    }
-
-    suspend fun locationExists(id: Int): Boolean = dbQuery {
-        Locations.selectAll()
-            .where { Locations.id eq id }
-            .count() > 0
-    }
-
-    suspend fun hasChildren(id: Int): Boolean = dbQuery {
-        Locations.selectAll()
+        // First check if location has children
+        val hasChildren = Locations.selectAll()
             .where { Locations.parentLocationId eq id }
             .count() > 0
+
+        if (hasChildren) {
+            false // Cannot delete location with children
+        } else {
+            Locations.deleteWhere { Locations.id eq id } > 0
+        }
     }
 
-    suspend fun getAllChildren(parentId: Int): List<LocationDto> = dbQuery {
-        Locations.selectAll()
-            .where { Locations.parentLocationId eq parentId }
+    suspend fun searchByName(searchTerm: String): List<LocationDto> = dbQuery {
+        val parentAlias = Locations.alias("parent")
+
+        Locations.leftJoin(parentAlias, { Locations.parentLocationId }, { parentAlias[Locations.id] })
+            .selectAll()
+            .where { Locations.name.lowerCase() like "%${searchTerm.lowercase()}%" }
             .orderBy(Locations.name to SortOrder.ASC)
-            .map { mapRowToDto(it) }
+            .map { mapRowToDto(it, parentAlias) }
     }
 
-    private fun mapRowToDto(row: ResultRow): LocationDto {
+    suspend fun getLocationHierarchy(): List<LocationHierarchyDto> = dbQuery {
+        val allLocations = Locations.selectAll()
+            .orderBy(Locations.name to SortOrder.ASC)
+            .map { mapRowToHierarchyDto(it) }
+
+        buildHierarchy(allLocations)
+    }
+
+    private fun mapRowToDto(row: ResultRow, parentAlias: Alias<Table>? = null): LocationDto {
         return LocationDto(
+            id = row[Locations.id],
+            name = row[Locations.name],
+            description = row[Locations.description],
+            address = row[Locations.address],
+            parentLocationId = row[Locations.parentLocationId],
+            parentLocationName = parentAlias?.let { row.getOrNull(it[Locations.name]) },
+            createdAt = row[Locations.createdAt].toString()
+        )
+    }
+
+    private fun mapRowToHierarchyDto(row: ResultRow): LocationHierarchyDto {
+        return LocationHierarchyDto(
             id = row[Locations.id],
             name = row[Locations.name],
             description = row[Locations.description],
@@ -112,5 +123,25 @@ class LocationRepository {
             parentLocationId = row[Locations.parentLocationId],
             createdAt = row[Locations.createdAt].toString()
         )
+    }
+
+    private fun buildHierarchy(locations: List<LocationHierarchyDto>): List<LocationHierarchyDto> {
+        val locationMap = locations.associateBy { it.id }
+        val rootLocations = mutableListOf<LocationHierarchyDto>()
+
+        locations.forEach { location ->
+            if (location.parentLocationId == null) {
+                rootLocations.add(location.copy(children = getChildren(location.id, locationMap)))
+            }
+        }
+
+        return rootLocations
+    }
+
+    private fun getChildren(parentId: Int, locationMap: Map<Int, LocationHierarchyDto>): List<LocationHierarchyDto> {
+        return locationMap.values
+            .filter { it.parentLocationId == parentId }
+            .map { it.copy(children = getChildren(it.id, locationMap)) }
+            .sortedBy { it.name }
     }
 }
