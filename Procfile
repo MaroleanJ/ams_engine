@@ -1,1 +1,1 @@
-web: java -jar build/libs/ams-engine.jar
+web: java -jar build/libs/ams_engine-all.jar
