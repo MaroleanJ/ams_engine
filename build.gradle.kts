@@ -18,7 +18,7 @@ repositories {
 
 tasks {
     shadowJar {
-        archiveBaseName.set("ktor-app")
+        archiveBaseName.set("ams-engine")
         archiveClassifier.set("")
         archiveVersion.set("")
         manifest {
