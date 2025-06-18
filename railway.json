@@ -2,7 +2,7 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "./gradlew shadowJar printJarPath"
+    "buildCommand": "./gradlew printJarPath"
   },
   "deploy": {
     "runtime": "V2",

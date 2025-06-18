@@ -17,6 +17,7 @@ repositories {
 }
 
 tasks.register("printJarPath") {
+    dependsOn("shadowJar") // <-- this ensures shadowJar runs first
     doLast {
         println("========== Listing build/libs ==========")
         file("build/libs").listFiles()?.forEach {
