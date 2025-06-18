@@ -153,4 +153,10 @@ class UserService(private val userRepository: UserRepository) {
     private fun isValidEmail(email: String): Boolean {
         return email.matches(Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"))
     }
+
+    suspend fun validateUserExists(id: Int) {
+        if (!userRepository.exists(id)) {
+            throw ApiException("User not found", HttpStatusCode.NotFound)
+        }
+    }
 }

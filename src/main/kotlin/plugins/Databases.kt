@@ -2,6 +2,7 @@ package com.techbros.plugins
 
 import com.techbros.config.DatabaseConfig
 import com.techbros.database.tables.AssetCategories
+import com.techbros.database.tables.Assets
 import com.techbros.database.tables.Locations
 import com.techbros.database.tables.Users
 import com.techbros.database.tables.Vendors
@@ -18,7 +19,8 @@ fun Application.configureDatabases() {
             Users,
             Locations,
             AssetCategories,
-            Vendors
+            Vendors,
+            Assets
         )
     }
 }

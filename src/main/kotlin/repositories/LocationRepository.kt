@@ -144,4 +144,10 @@ class LocationRepository {
             .map { it.copy(children = getChildren(it.id, locationMap)) }
             .sortedBy { it.name }
     }
+
+     suspend fun exists(id: Int): Boolean = dbQuery {
+     Locations.selectAll()
+         .where { Locations.id eq id }
+         .count() > 0
+    }
 }

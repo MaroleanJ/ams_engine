@@ -1,5 +1,6 @@
 package com.techbros.repositories
 
+import com.techbros.database.tables.Locations
 import com.techbros.database.tables.Users
 import com.techbros.models.dto.CreateUserRequest
 import com.techbros.models.dto.UpdateUserRequest
@@ -126,5 +127,11 @@ class UserRepository {
             role = row[Users.role],
             createdAt = row[Users.createdAt].toString()
         )
+    }
+
+    suspend fun exists(id: Int): Boolean = dbQuery {
+        Users.selectAll()
+            .where { Users.id eq id }
+            .count() > 0
     }
 }

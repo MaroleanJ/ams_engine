@@ -105,4 +105,10 @@ class LocationService(private val locationRepository: LocationRepository) {
             currentParentId = parentLocation?.parentLocationId
         }
     }
+
+    suspend fun validateLocationExists(id: Int) {
+        if (!locationRepository.exists(id)) {
+            throw ApiException("Location not found", HttpStatusCode.NotFound)
+        }
+    }
 }
