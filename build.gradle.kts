@@ -16,6 +16,16 @@ repositories {
     mavenCentral()
 }
 
+tasks.register("printJarPath") {
+    doLast {
+        println("========== Listing build/libs ==========")
+        file("build/libs").listFiles()?.forEach {
+            println("📦 " + it.name)
+        } ?: println("No files found.")
+    }
+}
+
+
 tasks {
     shadowJar {
         archiveBaseName.set("ams-engine")
