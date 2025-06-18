@@ -1,1 +1,1 @@
-web: java -jar build/libs/ktor-app.jar
+web: java -jar build/libs/ams-engine.jar
