@@ -19,12 +19,8 @@ repositories {
 tasks {
     shadowJar {
         archiveBaseName.set("ams-engine")
-        archiveClassifier.set("all")
-        archiveVersion.set("")
-        manifest {
-            attributes["Main-Class"] = "io.ktor.server.netty.EngineMain"
-        }
-        mergeServiceFiles()
+        archiveClassifier.set("")     // <- remove the "all"
+        archiveVersion.set("")        // <- no version suffix
     }
     build {
         dependsOn(shadowJar) // ensures shadowJar runs before build
