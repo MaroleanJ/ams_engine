@@ -1,6 +1,7 @@
 package com.techbros.plugins
 
 import com.techbros.config.DatabaseConfig
+import com.techbros.database.tables.AssetCategories
 import com.techbros.database.tables.Locations
 import com.techbros.database.tables.Users
 import io.ktor.server.application.*
@@ -14,7 +15,8 @@ fun Application.configureDatabases() {
     transaction(database) {
         SchemaUtils.create(
             Users,
-            Locations
+            Locations,
+            AssetCategories
         )
     }
 }

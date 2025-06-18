@@ -1,9 +1,12 @@
 package com.techbros.plugins
 
+import com.techbros.repositories.AssetCategoryRepository
 import com.techbros.repositories.LocationRepository
 import com.techbros.repositories.UserRepository
+import com.techbros.routes.api.assetCategoryRoutes
 import com.techbros.routes.api.locationRoutes
 import com.techbros.routes.api.userRoutes
+import com.techbros.services.AssetCategoryService
 import com.techbros.services.LocationService
 import com.techbros.services.UserService
 import io.ktor.server.application.*
@@ -17,6 +20,9 @@ fun Application.configureRouting() {
 
     val locationRepository = LocationRepository()
     val locationService = LocationService(locationRepository)
+
+    val assetCategoryRepository = AssetCategoryRepository()
+    val assetCategoryService = AssetCategoryService(assetCategoryRepository)
 
     // API routes
 
@@ -32,5 +38,6 @@ fun Application.configureRouting() {
         // API routes
         userRoutes(userService)
         locationRoutes(locationService)
+        assetCategoryRoutes(assetCategoryService)
     }
 }
