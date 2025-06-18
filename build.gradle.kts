@@ -26,6 +26,9 @@ tasks {
         }
         mergeServiceFiles()
     }
+    build {
+        dependsOn(shadowJar) // ensures shadowJar runs before build
+    }
 }
 
 dependencies {
