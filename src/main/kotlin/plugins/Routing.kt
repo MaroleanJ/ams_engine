@@ -16,7 +16,7 @@ fun Application.configureRouting() {
 
     routing {
         get("/") {
-            call.respondText("School Management API Server")
+            call.respondText("Asset Management API Server")
         }
 
         get("/health") {

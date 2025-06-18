@@ -16,6 +16,18 @@ repositories {
     mavenCentral()
 }
 
+tasks {
+    shadowJar {
+        archiveBaseName.set("ktor-app")
+        archiveClassifier.set("")
+        archiveVersion.set("")
+        manifest {
+            attributes["Main-Class"] = "io.ktor.server.netty.EngineMain"
+        }
+        mergeServiceFiles()
+    }
+}
+
 dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.serialization.kotlinx.json)
