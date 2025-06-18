@@ -7,7 +7,7 @@
   "deploy": {
     "runtime": "V2",
     "numReplicas": 1,
-    "startCommand": "java -jar build/libs/ams-engine.jar",
+    "startCommand": "java -jar build/libs/ams-engine-all.jar",
     "sleepApplication": false,
     "multiRegionConfig": {
       "asia-southeast1-eqsg3a": {
