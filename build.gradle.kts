@@ -19,7 +19,7 @@ repositories {
 tasks {
     shadowJar {
         archiveBaseName.set("ams-engine")
-        archiveClassifier.set("")
+        archiveClassifier.set("all")
         archiveVersion.set("")
         manifest {
             attributes["Main-Class"] = "io.ktor.server.netty.EngineMain"
