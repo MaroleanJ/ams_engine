@@ -4,18 +4,24 @@ import com.techbros.repositories.AssetCategoryRepository
 import com.techbros.repositories.AssetHistoryRepository
 import com.techbros.repositories.AssetRepository
 import com.techbros.repositories.LocationRepository
+import com.techbros.repositories.MaintenanceScheduleRepository
+import com.techbros.repositories.MaintenanceTypeRepository
 import com.techbros.repositories.UserRepository
 import com.techbros.repositories.VendorRepository
 import com.techbros.routes.api.assetCategoryRoutes
 import com.techbros.routes.api.assetHistoryRoutes
 import com.techbros.routes.api.assetRoutes
 import com.techbros.routes.api.locationRoutes
+import com.techbros.routes.api.maintenanceScheduleRoutes
+import com.techbros.routes.api.maintenanceTypeRoutes
 import com.techbros.routes.api.userRoutes
 import com.techbros.routes.api.vendorRoutes
 import com.techbros.services.AssetCategoryService
 import com.techbros.services.AssetHistoryService
 import com.techbros.services.AssetService
 import com.techbros.services.LocationService
+import com.techbros.services.MaintenanceScheduleService
+import com.techbros.services.MaintenanceTypeService
 import com.techbros.services.UserService
 import com.techbros.services.VendorService
 import io.ktor.server.application.*
@@ -42,6 +48,12 @@ fun Application.configureRouting() {
     val assetHistoryRepository = AssetHistoryRepository()
     val assetHistoryService = AssetHistoryService(assetHistoryRepository, assetRepository, userRepository)
 
+    val maintenanceTypeRepository = MaintenanceTypeRepository()
+    val maintenanceTypeService = MaintenanceTypeService(maintenanceTypeRepository)
+
+    val maintenanceScheduleRepository = MaintenanceScheduleRepository()
+    val maintenanceScheduleService = MaintenanceScheduleService(maintenanceScheduleRepository, assetRepository, maintenanceTypeRepository, userRepository)
+
     // API routes
 
     routing {
@@ -64,5 +76,7 @@ fun Application.configureRouting() {
         vendorRoutes(vendorService)
         assetRoutes(assetService)
         assetHistoryRoutes(assetHistoryService)
+        maintenanceTypeRoutes(maintenanceTypeService)
+        maintenanceScheduleRoutes(maintenanceScheduleService)
     }
 }

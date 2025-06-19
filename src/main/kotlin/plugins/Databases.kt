@@ -5,6 +5,8 @@ import com.techbros.database.tables.AssetCategories
 import com.techbros.database.tables.AssetHistory
 import com.techbros.database.tables.Assets
 import com.techbros.database.tables.Locations
+import com.techbros.database.tables.MaintenanceSchedules
+import com.techbros.database.tables.MaintenanceTypes
 import com.techbros.database.tables.Users
 import com.techbros.database.tables.Vendors
 import io.ktor.server.application.*
@@ -22,7 +24,9 @@ fun Application.configureDatabases() {
             AssetCategories,
             Vendors,
             Assets,
-            AssetHistory
+            AssetHistory,
+            MaintenanceTypes,
+            MaintenanceSchedules
         )
     }
 }
