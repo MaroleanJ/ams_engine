@@ -47,6 +47,10 @@ fun Application.configureRouting() {
             call.respondText("OK")
         }
 
+        post("/post-check") {
+            call.respondText("Post Working")
+        }
+
         // API routes
         userRoutes(userService)
         locationRoutes(locationService)
