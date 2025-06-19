@@ -194,13 +194,39 @@ fun Route.assetRoutes(assetService: AssetService) {
 
         // Create asset
         post {
-            val request = call.receive<CreateAssetRequest>()
-            val asset = assetService.createAsset(request)
-            call.respond(HttpStatusCode.Created, ApiResponse(
-                success = true,
-                data = asset,
-                message = "Asset created successfully"
-            ))
+            try {
+                val request = call.receive<CreateAssetRequest>()
+                val asset = assetService.createAsset(request)
+                call.respond(
+                    HttpStatusCode.Created,
+                    ApiResponse(
+                        success = true,
+                        data = asset,
+                        message = "Asset created successfully"
+                    )
+                )
+            } catch (e: ContentTransformationException) {
+                // Handles invalid/malformed JSON input
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    ApiResponse(
+                        success = false,
+                        data = null,
+                        message = "Invalid request format: ${e.message}"
+                    )
+                )
+            } catch (e: Exception) {
+                // Handles unexpected errors from the service or elsewhere
+                e.printStackTrace()
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    ApiResponse(
+                        success = false,
+                        data = null,
+                        message = "An unexpected error occurred: ${e.message}"
+                    )
+                )
+            }
         }
 
         // Update asset

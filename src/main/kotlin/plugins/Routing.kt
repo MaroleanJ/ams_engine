@@ -1,16 +1,19 @@
 package com.techbros.plugins
 
 import com.techbros.repositories.AssetCategoryRepository
+import com.techbros.repositories.AssetHistoryRepository
 import com.techbros.repositories.AssetRepository
 import com.techbros.repositories.LocationRepository
 import com.techbros.repositories.UserRepository
 import com.techbros.repositories.VendorRepository
 import com.techbros.routes.api.assetCategoryRoutes
+import com.techbros.routes.api.assetHistoryRoutes
 import com.techbros.routes.api.assetRoutes
 import com.techbros.routes.api.locationRoutes
 import com.techbros.routes.api.userRoutes
 import com.techbros.routes.api.vendorRoutes
 import com.techbros.services.AssetCategoryService
+import com.techbros.services.AssetHistoryService
 import com.techbros.services.AssetService
 import com.techbros.services.LocationService
 import com.techbros.services.UserService
@@ -36,6 +39,9 @@ fun Application.configureRouting() {
     val assetRepository = AssetRepository()
     val assetService = AssetService(assetRepository, assetCategoryService, vendorService, locationService, userService)
 
+    val assetHistoryRepository = AssetHistoryRepository()
+    val assetHistoryService = AssetHistoryService(assetHistoryRepository, assetRepository, userRepository)
+
     // API routes
 
     routing {
@@ -57,5 +63,6 @@ fun Application.configureRouting() {
         assetCategoryRoutes(assetCategoryService)
         vendorRoutes(vendorService)
         assetRoutes(assetService)
+        assetHistoryRoutes(assetHistoryService)
     }
 }

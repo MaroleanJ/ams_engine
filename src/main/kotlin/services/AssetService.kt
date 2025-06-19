@@ -28,6 +28,7 @@ class AssetService(
     private val serialNumberPattern = Pattern.compile("^[A-Za-z0-9\\-_]+$")
 
     suspend fun createAsset(request: CreateAssetRequest): AssetDto {
+        print("Asset creation request")
         validateAssetRequest(request)
         validateReferences(request.categoryId, request.vendorId, request.locationId, request.assignedTo)
         validateUniqueFields(request.serialNumber, request.barcode)
