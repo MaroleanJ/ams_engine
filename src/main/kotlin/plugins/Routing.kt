@@ -4,6 +4,7 @@ import com.techbros.repositories.AssetCategoryRepository
 import com.techbros.repositories.AssetHistoryRepository
 import com.techbros.repositories.AssetIssueRepository
 import com.techbros.repositories.AssetRepository
+import com.techbros.repositories.DashboardRepository
 import com.techbros.repositories.FileAttachmentRepository
 import com.techbros.repositories.LocationRepository
 import com.techbros.repositories.MaintenanceRecordRepository
@@ -17,6 +18,7 @@ import com.techbros.routes.api.assetCategoryRoutes
 import com.techbros.routes.api.assetHistoryRoutes
 import com.techbros.routes.api.assetIssueRoutes
 import com.techbros.routes.api.assetRoutes
+import com.techbros.routes.api.dashboardRoutes
 import com.techbros.routes.api.fileAttachmentRoutes
 import com.techbros.routes.api.locationRoutes
 import com.techbros.routes.api.maintenanceRecordRoutes
@@ -30,6 +32,7 @@ import com.techbros.services.AssetCategoryService
 import com.techbros.services.AssetHistoryService
 import com.techbros.services.AssetIssueService
 import com.techbros.services.AssetService
+import com.techbros.services.DashboardService
 import com.techbros.services.FileAttachmentService
 import com.techbros.services.LocationService
 import com.techbros.services.MaintenanceRecordService
@@ -83,6 +86,9 @@ fun Application.configureRouting() {
 
     val assetIssueRepository = AssetIssueRepository()
     val assetIssueService = AssetIssueService(assetIssueRepository, assetService, userService)
+
+    val dashboardRepository = DashboardRepository()
+    val dashboardService = DashboardService(dashboardRepository)
     // API routes
 
     routing {
@@ -112,5 +118,6 @@ fun Application.configureRouting() {
         subscriptionRoutes(subscriptionService)
         fileAttachmentRoutes(fileAttachmentService)
         assetIssueRoutes(assetIssueService)
+        dashboardRoutes(dashboardService)
     }
 }
